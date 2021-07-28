@@ -1,24 +1,32 @@
 import React from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { RecoilRoot } from 'recoil'
+import { Route, BrowserRouter, Switch } from 'react-router-dom'
+import Home from './scenes/home'
+import MovieDetail from './scenes/movie-detail'
+import Login from './scenes/login'
+import ThemeProvider from '@material-ui/styles/ThemeProvider'
+import { createTheme } from '@material-ui/core'
 
-function App() {
+const App: React.FC<any> = () => {
+  const theme = createTheme({ palette: { type: 'dark' } })
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className='App-link'
-          href='https://reactjs.org'
-          target='_blank'
-          rel='noopener noreferrer'>
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RecoilRoot>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path='/'>
+              <Home />
+            </Route>
+            <Route path='/movie'>
+              <MovieDetail />
+            </Route>
+            <Route path='/login'>
+              <Login />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </ThemeProvider>
+    </RecoilRoot>
   )
 }
 

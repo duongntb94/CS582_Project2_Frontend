@@ -1,8 +1,22 @@
+// Import reflect metada for class transform.
+import 'reflect-metadata'
+
+// Import Swiper styles
+import 'swiper/swiper.min.css'
+import 'swiper/components/pagination/pagination.min.css'
+import 'swiper/components/navigation/navigation.min.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+
+// import Swiper core and required modules
+import SwiperCore, { Pagination, Navigation } from 'swiper/core'
+
+// install Swiper modules
+SwiperCore.use([Pagination, Navigation])
 
 ReactDOM.render(
   <React.StrictMode>
