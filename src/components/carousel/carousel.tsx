@@ -45,7 +45,7 @@ export const Carousel: React.FC<ICarouselProps> = (props: ICarouselProps) => {
               key={`${item.id}${index}`}
               onClick={() => onPress(item)}>
               <Grid className='movie-item'>
-                <img src={item.imageUrl} alt='' />
+                <img src={item.thumbnail} alt='' />
                 <div className='movie-item-title'>{item.name}</div>
               </Grid>
             </SwiperSlide>

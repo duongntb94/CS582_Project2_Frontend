@@ -1,0 +1,21 @@
+export class TMDBMovieModel {
+  adult: boolean = false
+  backdrop_path: string = ''
+  homepage: string = ''
+  id: number = 0
+  imdb_id: string = ''
+  original_language: string = ''
+  original_title: string = ''
+  overview: string = ''
+  popularity: number = 0.0
+  poster_path: string = ''
+  release_date: string = ''
+  revenue: number = 0.0
+  runtime: number = 0.0
+  status: string = ''
+  tagline: string = ''
+  title: string = ''
+  video: boolean = false
+  vote_average: number = 0.0
+  vote_count: number = 0.0
+}

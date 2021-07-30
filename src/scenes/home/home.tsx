@@ -1,21 +1,16 @@
-import AppBar from '@material-ui/core/AppBar'
 import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { makeStyles } from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import Carousel from '../../components/carousel'
 import Copyright from '../../components/copyright'
+import HeaderBar from '../../components/header-bar'
 import { MovieModel } from '../../models'
 import { ApiService } from '../../services'
-import { selectedMovieState, userState } from '../../store/globalStates'
-import { loginStatusSelector, welcomeTextSelector } from '../../store/selectors'
-import './home.scss'
+import { selectedMovieState } from '../../store/globalStates'
 
 const useStyles = makeStyles((theme) => ({
   '@global': {
@@ -56,9 +51,6 @@ export const Home: React.FC<HomeProps> = () => {
   const classes = useStyles()
 
   // Process global states
-  const isLogin = useRecoilValue(loginStatusSelector)
-  const welcomeMessage = useRecoilValue(welcomeTextSelector)
-  const setUser = useSetRecoilState(userState)
   const history = useHistory()
   const setSelectedMovie = useSetRecoilState(selectedMovieState)
 
@@ -70,22 +62,13 @@ export const Home: React.FC<HomeProps> = () => {
   const getTrendingMovies = useCallback(async () => {
     try {
       setIsLoadRM(true)
-      const movies = await ApiService.getRecommendMovies()
+      const movies = await ApiService.getTopPopularMovies()
       setRecomMovies(movies)
       setIsLoadRM(false)
     } catch (e) {
       console.log('getTrendingMovies e', e)
     }
   }, [])
-
-  // Handle actions
-  const onClickLogin = useCallback(async () => {
-    if (isLogin) {
-      setUser(undefined)
-    } else {
-      history.push('/login')
-    }
-  }, [history, isLogin, setUser])
 
   const onClickMovie = useCallback(
     async (item: MovieModel) => {
@@ -103,29 +86,7 @@ export const Home: React.FC<HomeProps> = () => {
   return (
     <React.Fragment>
       <CssBaseline />
-      <AppBar
-        position='static'
-        color='default'
-        elevation={0}
-        className={classes.appBar}>
-        <Toolbar className={classes.toolbar}>
-          <Typography
-            variant='h6'
-            color='inherit'
-            noWrap
-            className={classes.toolbarTitle}>
-            NetMovies
-          </Typography>
-          <p>{welcomeMessage}</p>
-          <Button
-            onClick={onClickLogin}
-            color='default'
-            variant='outlined'
-            className={classes.link}>
-            {isLogin ? 'Log out' : 'Log in'}
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <HeaderBar />
       {/* Content */}
       <Container maxWidth='lg' component='main'>
         <Carousel
