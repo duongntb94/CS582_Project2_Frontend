@@ -7,8 +7,9 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import Carousel from '../../components/carousel'
 import Copyright from '../../components/copyright'
@@ -27,12 +28,15 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     borderBottom: `1px solid ${theme.palette.divider}`,
+    backgroundColor: '#f44336',
   },
   toolbar: {
     flexWrap: 'wrap',
   },
   toolbarTitle: {
     flexGrow: 1,
+    textDecoration: 'none',
+    color: 'white',
   },
   link: {
     margin: theme.spacing(1, 1.5),
@@ -112,6 +116,8 @@ export const MovieDetail: React.FC<MovieDetailProps> = () => {
             variant='h6'
             color='inherit'
             noWrap
+            component={Link}
+            href='/'
             className={classes.toolbarTitle}>
             NetMovies
           </Typography>
