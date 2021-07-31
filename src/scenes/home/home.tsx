@@ -4,13 +4,14 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import Carousel from '../../components/carousel'
 import Copyright from '../../components/copyright'
 import HeaderBar from '../../components/header-bar'
 import { MovieModel } from '../../models'
 import { ApiService } from '../../services'
-import { selectedMovieState } from '../../store/globalStates'
+import { selectedMovieState, userState } from '../../store/globalStates'
+import { loginStatusSelector } from '../../store/selectors'
 
 const useStyles = makeStyles((theme) => ({
   '@global': {
@@ -53,35 +54,72 @@ export const Home: React.FC<HomeProps> = () => {
   // Process global states
   const history = useHistory()
   const setSelectedMovie = useSetRecoilState(selectedMovieState)
+  const isLogin = useRecoilValue(loginStatusSelector)
+  const [user] = useRecoilState(userState)
+  const [popularMovies, setPopularMovies] = useState<MovieModel[]>([])
+  const [isLoadPM, setIsLoadPM] = useState<boolean>(false)
 
-  // Store data for trending movies section
-  const [recomMovies, setRecomMovies] = useState<MovieModel[]>([])
+  const [ratingMovies, setRatingMovies] = useState<MovieModel[]>([])
   const [isLoadRM, setIsLoadRM] = useState<boolean>(false)
 
-  // Fetch trending movies
-  const getTrendingMovies = useCallback(async () => {
+  const [recommendMovies, setRecommendMovies] = useState<MovieModel[]>([])
+  const [isLoadRMU, setIsLoadRMU] = useState<boolean>(false)
+
+  // Fetch apis
+  const getPopularMovies = useCallback(async () => {
     try {
-      setIsLoadRM(true)
+      setIsLoadPM(true)
       const movies = await ApiService.getTopPopularMovies()
-      setRecomMovies(movies)
-      setIsLoadRM(false)
+      setPopularMovies(movies)
+      setIsLoadPM(false)
     } catch (e) {
-      console.log('getTrendingMovies e', e)
+      console.log('getPopularMovies e', e)
     }
   }, [])
+
+  const getRatingMovies = useCallback(async () => {
+    try {
+      setIsLoadRM(true)
+      const movies = await ApiService.getTopRatingMovies()
+      setRatingMovies(movies)
+      setIsLoadRM(false)
+    } catch (e) {
+      console.log('getRatingMovies e ', e)
+    }
+  }, [])
+
+  const getRecommendMovies = useCallback(async () => {
+    if (!isLogin || !user) {
+      setRecommendMovies([])
+      return
+    }
+    try {
+      setIsLoadRMU(true)
+      const movies = await ApiService.getUserRecommendMovies(user.id)
+      setRecommendMovies(movies)
+      setIsLoadRMU(false)
+    } catch (e) {
+      console.log('getRecommendMovies e', e)
+    }
+  }, [isLogin, user])
 
   const onClickMovie = useCallback(
     async (item: MovieModel) => {
       setSelectedMovie(item)
-      history.push(`movie/${item.id}`)
+      // history.push(`movie/${item.id}`)
     },
     [history, setSelectedMovie]
   )
 
   // Initial load
   useEffect(() => {
-    getTrendingMovies()
-  }, [getTrendingMovies])
+    getPopularMovies()
+    getRatingMovies()
+  }, [getPopularMovies, getRatingMovies])
+
+  useEffect(() => {
+    getRecommendMovies()
+  }, [getRecommendMovies, isLogin])
 
   return (
     <React.Fragment>
@@ -89,25 +127,26 @@ export const Home: React.FC<HomeProps> = () => {
       <HeaderBar />
       {/* Content */}
       <Container maxWidth='lg' component='main'>
+        {isLogin && (
+          <Carousel
+            title={'Recommended movies for you'}
+            isLoading={isLoadRMU}
+            onPress={onClickMovie}
+            items={recommendMovies}
+          />
+        )}
         <Carousel
-          title={'Trending Movies'}
-          isLoading={isLoadRM}
+          title={'Trending movies based on popularity'}
+          isLoading={isLoadPM}
           onPress={onClickMovie}
-          items={recomMovies}
+          items={popularMovies}
         />
 
         <Carousel
-          title={'Action Movies'}
+          title={'Trending movies based on IMDB rating scores'}
           isLoading={isLoadRM}
           onPress={onClickMovie}
-          items={recomMovies}
-        />
-
-        <Carousel
-          title={'Comedy Movies'}
-          isLoading={isLoadRM}
-          onPress={onClickMovie}
-          items={recomMovies}
+          items={ratingMovies}
         />
       </Container>
       {/* Footer */}

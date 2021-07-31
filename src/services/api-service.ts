@@ -26,6 +26,41 @@ interface IUserRecommendMovieParams {
   watched?: boolean
 }
 
+const cacheMovies: Record<string, TMDBMovieModel> = {}
+
+/**
+ * Add TMBD data input movie.
+ * @param input input movie.
+ * @returns inserted tmdb movie.
+ */
+const addTMBDData = async (input: MovieModel): Promise<MovieModel> => {
+  let tmdbMovie = cacheMovies[input.imdbId]
+  if (tmdbMovie) {
+    input.addTMDBMovieData(tmdbMovie)
+    return input
+  }
+  try {
+    tmdbMovie = await ApiService.getMovieDetail(input.imdbId)
+    if (tmdbMovie) {
+      input.addTMDBMovieData(tmdbMovie)
+      cacheMovies[input.imdbId] = tmdbMovie
+    }
+  } catch (e) {
+    console.log('Add TMDB Data error', e)
+  }
+  return input
+}
+
+/**
+ * Batch inserted data movie.
+ * @param input input.
+ * @returns promise movie models.
+ */
+const runBatchAddTMDBData = (input: MovieModel[]): Promise<MovieModel[]> => {
+  const promises = input.map((movie) => addTMBDData(movie))
+  return Promise.all(promises)
+}
+
 export const ApiService = {
   /**
    * Get list of trending movies based on popularity (default: top=10)
@@ -40,7 +75,8 @@ export const ApiService = {
       params,
     })
     const data = response.data as any[]
-    return plainToClass(MovieModel, data)
+    const movies: MovieModel[] = plainToClass(MovieModel, data)
+    return runBatchAddTMDBData(movies)
   },
   /**
    * Get list of trending movies based on IMDB rating scores (default: top=10)
@@ -55,7 +91,8 @@ export const ApiService = {
       params,
     })
     const data = response.data as any[]
-    return plainToClass(MovieModel, data)
+    const movies = plainToClass(MovieModel, data)
+    return runBatchAddTMDBData(movies)
   },
   /**
    * Get predicted rating of a user for a movie
@@ -78,14 +115,24 @@ export const ApiService = {
    * @returns
    */
   getUserRecommendMovies: async (
+    userId?: number,
     params?: IUserRecommendMovieParams
   ): Promise<MovieModel[]> => {
-    const response = await instance.get(API_URL.GET_RECOMMEND_MOVIES, {
-      params,
-    })
+    const response = await instance.get(
+      API_URL.GET_RECOMMEND_MOVIES.replace(':id', `${userId}`),
+      {
+        params,
+      }
+    )
     const data = response.data as any[]
-    return plainToClass(MovieModel, data)
+    const movies = plainToClass(MovieModel, data)
+    return runBatchAddTMDBData(movies)
   },
+  /**
+   * Get movie detail from imdb
+   * @param imdbId
+   * @returns
+   */
   getMovieDetail: async (imdbId: string): Promise<TMDBMovieModel> => {
     const response = await axios.get(
       API_URL.GET_TMDB_MOVIE_DETAIL.replace(':id', imdbId),
