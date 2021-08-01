@@ -6,6 +6,7 @@ const API_URL = {
   GET_TOP_RATING_MOVIES: 'trend/rating',
   PREDICT_RATING: 'predict/rating',
   GET_RECOMMEND_MOVIES: 'user/:id',
+  GET_SIMILAR_MOVIES: 'similar',
   LOGIN: 'movies/login',
 
   GET_TMDB_MOVIE_DETAIL: 'https://api.themoviedb.org/3/movie/:id',

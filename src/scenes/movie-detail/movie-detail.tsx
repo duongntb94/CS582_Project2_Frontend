@@ -46,6 +46,16 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: theme.spacing(6),
     },
   },
+  posterImage: {
+    width: 200,
+    height: 'auto',
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+  contentContainer: {},
 }))
 
 interface MovieDetailProps {}
@@ -61,17 +71,21 @@ export const MovieDetail: React.FC<MovieDetailProps> = () => {
   const [recomMovies, setRecomMovies] = useState<MovieModel[]>([])
   const [isLoadRM, setIsLoadRM] = useState<boolean>(false)
 
-  // Fetch trending movies
-  const getTrendingMovies = useCallback(async () => {
+  const getSimilarMovies = useCallback(async () => {
+    if (!selectedMovie) {
+      return
+    }
     try {
       setIsLoadRM(true)
-      const movies = await ApiService.getTopPopularMovies()
+      const movies = await ApiService.getSimilarMovies({
+        movie: selectedMovie.id,
+      })
       setRecomMovies(movies)
       setIsLoadRM(false)
     } catch (e) {
-      console.log('getTrendingMovies e', e)
+      console.log('getSimilarMovies e', e)
     }
-  }, [])
+  }, [selectedMovie])
 
   const onClickMovie = useCallback(
     async (item: MovieModel) => {
@@ -83,8 +97,8 @@ export const MovieDetail: React.FC<MovieDetailProps> = () => {
 
   // Initial load
   useEffect(() => {
-    getTrendingMovies()
-  }, [getTrendingMovies])
+    getSimilarMovies()
+  }, [getSimilarMovies, selectedMovie])
 
   return (
     <React.Fragment>
@@ -92,13 +106,30 @@ export const MovieDetail: React.FC<MovieDetailProps> = () => {
       <HeaderBar />
       {/* Content */}
       <Container maxWidth='lg' component='main'>
-        <Grid>
-          <p style={{ fontSize: 30 }}>Selected movies: {selectedMovie?.name}</p>
+        <Grid container spacing={10}>
+          <Grid item xs={12} sm={2}>
+            <img
+              className={classes.posterImage}
+              src={selectedMovie?.thumbnail}
+              alt=''
+            />
+          </Grid>
+          <Grid item xs={12} sm={10}>
+            <Grid container>
+              <Grid item xs={12}>
+                <p className={classes.title}>{selectedMovie?.name}</p>
+              </Grid>
+              <Grid item xs={12}>
+                <div>Description:</div>
+                {selectedMovie?.description}
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
 
         {/* Recommendation section */}
         <Carousel
-          title={'Recommended Movies'}
+          title={'Relevant movies'}
           isLoading={isLoadRM}
           onPress={onClickMovie}
           items={recomMovies}

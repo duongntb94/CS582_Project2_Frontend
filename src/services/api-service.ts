@@ -26,6 +26,11 @@ interface IUserRecommendMovieParams {
   watched?: boolean
 }
 
+interface ISimillarMovieParams {
+  movie: string
+  top?: number
+}
+
 const cacheMovies: Record<string, TMDBMovieModel> = {}
 
 /**
@@ -124,6 +129,17 @@ export const ApiService = {
         params,
       }
     )
+    const data = response.data as any[]
+    const movies = plainToClass(MovieModel, data)
+    console.log('movies', movies)
+    return runBatchAddTMDBData(movies)
+  },
+  getSimilarMovies: async (
+    params: ISimillarMovieParams
+  ): Promise<MovieModel[]> => {
+    const response = await instance.get(API_URL.GET_SIMILAR_MOVIES, {
+      params,
+    })
     const data = response.data as any[]
     const movies = plainToClass(MovieModel, data)
     return runBatchAddTMDBData(movies)

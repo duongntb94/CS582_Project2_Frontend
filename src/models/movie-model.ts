@@ -27,7 +27,7 @@ export class MovieModel {
   @Transform(({ type, obj, value }) => {
     switch (type) {
       case TransformationType.PLAIN_TO_CLASS:
-        const v = obj.original_title
+        const v = obj.original_title || obj.title
         if (v) {
           return String(v)
         }
@@ -56,8 +56,8 @@ export class MovieModel {
     }
   })
   genres: string[] = []
-  thumbnail: string = ''
-  originalImage: string = ''
+  thumbnail: string = 'assets/placeholder_film.png'
+  originalImage: string = 'assets/placeholder_film.png'
   description: string = ''
 
   /**
