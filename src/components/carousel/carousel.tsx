@@ -1,7 +1,7 @@
 import React from 'react'
 import { MovieModel } from '../../models'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import './carousel.scss'
+import './carousel.css'
 import { CircularProgress, Grid } from '@material-ui/core'
 
 interface ICarouselProps {

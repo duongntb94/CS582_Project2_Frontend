@@ -106,7 +106,7 @@ export const Home: React.FC<HomeProps> = () => {
   const onClickMovie = useCallback(
     async (item: MovieModel) => {
       setSelectedMovie(item)
-      // history.push(`movie/${item.id}`)
+      history.push(`movie/${item.id}`)
     },
     [history, setSelectedMovie]
   )
