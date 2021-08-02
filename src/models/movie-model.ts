@@ -2,6 +2,22 @@ import { Expose, Transform, Type, TransformationType } from 'class-transformer'
 import { TMDBMovieModel } from './tmdb-movie-model'
 
 export class MovieModel {
+  @Expose()
+  @Type(() => String)
+  @Transform(({ type, obj, value }) => {
+    switch (type) {
+      case TransformationType.PLAIN_TO_CLASS:
+        const v = obj.id || obj.movieId
+        if (v) {
+          return String(v)
+        }
+        return ''
+      case TransformationType.CLASS_TO_PLAIN:
+        return value
+      default:
+        return value
+    }
+  })
   id: string = ''
 
   @Expose()
@@ -11,7 +27,18 @@ export class MovieModel {
       case TransformationType.PLAIN_TO_CLASS:
         const v = obj.imdb_id
         if (v) {
-          return String(v)
+          let rawImdbId: String = String(v)
+          if (rawImdbId.includes('tt')) {
+            return rawImdbId
+          }
+          // Actual IMDB id has 7 digits follow after tt. E.g: ttxxxxxxx
+          // IMDB digits, so it may has only 4,5,6 digits.
+          const numOfZero = 7 - rawImdbId.length
+          let actualImdbId = `${rawImdbId}`
+          for (let i = 0; i < numOfZero; i++) {
+            actualImdbId = `0${actualImdbId}`
+          }
+          return `tt${actualImdbId}`
         }
         return ''
       case TransformationType.CLASS_TO_PLAIN:
