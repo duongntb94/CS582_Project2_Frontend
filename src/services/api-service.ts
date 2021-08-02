@@ -27,7 +27,7 @@ interface IUserRecommendMovieParams {
 }
 
 interface ISimillarMovieParams {
-  movie: string
+  imdbId: string
   top?: number
 }
 

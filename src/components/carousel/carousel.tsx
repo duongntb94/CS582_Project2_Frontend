@@ -39,7 +39,7 @@ export const Carousel: React.FC<ICarouselProps> = (props: ICarouselProps) => {
           slidesPerGroup={6}
           loop={true}
           loopFillGroupWithBlank={true}
-          navigation={true}>
+          navigation={items.length > 0}>
           {items.map((item, index) => (
             <SwiperSlide
               key={`${item.id}${index}`}

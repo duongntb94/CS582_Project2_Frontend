@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import DeleteIcon from '@material-ui/icons/DeleteRounded'
 import PersonIcon from '@material-ui/icons/Person'
 import React from 'react'
+import { useHistory } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { IMDB_USERS } from '../../assets/constants'
 import { UserModel } from '../../models'
@@ -52,7 +53,6 @@ const UserSelecDialog: React.FC<UserSelectDialogProps> = (
 ) => {
   const classes = useStyles()
   const { onClose, selectedUser, open } = props
-
   const handleClose = () => {
     onClose(selectedUser)
   }
@@ -102,6 +102,7 @@ export const HeaderBar = () => {
   const [open, setOpen] = React.useState(false)
   const welcomeMessage = useRecoilValue(welcomeTextSelector)
   const [user, setUser] = useRecoilState(userState)
+  const history = useHistory()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -127,7 +128,7 @@ export const HeaderBar = () => {
             color='inherit'
             noWrap
             component={Link}
-            href='/'
+            onClick={() => history.replace('/')}
             className={classes.toolbarTitle}>
             NetMovies
           </Typography>

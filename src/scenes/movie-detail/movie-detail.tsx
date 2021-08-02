@@ -78,12 +78,13 @@ export const MovieDetail: React.FC<MovieDetailProps> = () => {
     try {
       setIsLoadRM(true)
       const movies = await ApiService.getSimilarMovies({
-        movie: selectedMovie.id,
+        imdbId: selectedMovie.imdbId,
       })
       setRecomMovies(movies)
-      setIsLoadRM(false)
     } catch (e) {
       console.log('getSimilarMovies e', e)
+    } finally {
+      setIsLoadRM(false)
     }
   }, [selectedMovie])
 
